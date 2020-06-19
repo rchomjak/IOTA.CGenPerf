@@ -132,7 +132,7 @@ int main(int argc, char *argv[static argc]) {
   thrd_t threads[parsed_argv.no_thread];
   struct thread_gen_address_s thread_func_argv[parsed_argv.no_thread];
 
-  clock_gettime(CLOCK_REALTIME, &(perf_time.start_time));
+  clock_gettime(CLOCK_MONOTONIC, &(perf_time.start_time));
   for (size_t i = 0; i < parsed_argv.no_thread; i++) {
 
 
@@ -156,12 +156,12 @@ int main(int argc, char *argv[static argc]) {
 
         thrd_join(threads[i], NULL);
   }
+  clock_gettime(CLOCK_MONOTONIC, &(perf_time.end_time));
 
   for (size_t i = 0; i < parsed_argv.no_address; i++) {
     fprintf(stdout, "%ld: %s\n", i, addresses[i]);
   }
 
-  clock_gettime(CLOCK_REALTIME, &(perf_time.end_time));
 
 
   time_diff = ((perf_time.end_time.tv_sec - perf_time.start_time.tv_sec) +
