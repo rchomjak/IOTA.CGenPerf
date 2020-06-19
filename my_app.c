@@ -47,7 +47,7 @@ struct parsed_arguments {
   // help
   char h_flag;
 };
-static const char *help_msg = "./prog_name -t <int value > 0> -a <int value >0>";
+static const char *help_msg = "-t <int value > 0> -a <int value >0>";
 
 struct thread_gen_address_s{
   size_t start;
@@ -119,7 +119,7 @@ int main(int argc, char *argv[static argc]) {
   argv_ret_val = parse_cmd_argv(argc, argv, &parsed_argv);
 
   if (argv_ret_val != E_OK || parsed_argv.h_flag != 0) {
-    fprintf(stderr, "%s", help_msg);
+    fprintf(stderr, "%s %s", argv[0], help_msg);
     return EXIT_FAILURE;
   }
 
@@ -179,9 +179,8 @@ int main(int argc, char *argv[static argc]) {
   for (size_t i = 0; i < parsed_argv.no_address; i++) {
     free(addresses[i]);
   }
-
-
   free(addresses);
+
   return EXIT_SUCCESS;
 }
 
