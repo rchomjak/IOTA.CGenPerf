@@ -5,14 +5,14 @@ Proof of concept, performance comparison implementation in C
 app template: https://github.com/oopsmonk/iota_c_templates
 
 
-### build version
+### Release version
 ```bash
 mkdir build && cd build
 
 cmake -DCMAKE_INSTALL_PREFIX=$PWD .. && make -j8
 
 # run the example 
-./my_app
+./my_app -t 1 -a 10
 
 ```
 
@@ -21,5 +21,5 @@ cmake -DCMAKE_INSTALL_PREFIX=$PWD .. && make -j8
 mkdir debug && cd debug
 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$PWD .. && make -j8
 # run the example, you can run gdb... 
-./my_app
+./my_app -t 1 -a 10
 ```
