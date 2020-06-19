@@ -1,6 +1,6 @@
 # gen_iota_address
 
-Proof of concept, performance comparison implementation in C 
+Proof of concept, implemented in C 
 
 app template: https://github.com/oopsmonk/iota_c_templates
 
