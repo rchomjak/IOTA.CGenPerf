@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include <threads.h>
 
-#define _POSIX_C_SOURCE >= 199309L
+#define _POSIX_C_SOURCE 199309L
 
 #include <time.h>
 
@@ -16,9 +16,8 @@
   #define SEED "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN"
 #endif
 
-#define IOTA_SECURITY_LEVEL 2
+#define IOTA_SECURITY_LEVEL 1 
 
-char **addresses;
 
 
 
@@ -53,9 +52,10 @@ struct thread_gen_address_s{
   size_t start;
   size_t end;
   const char *seed;
+  char **addresses;
 };
 
-void generate_addresses(size_t start, size_t end, const char *seed) {
+void generate_addresses(size_t start, size_t end, const char *seed, char ***addresses) {
   char *address = NULL;
   for (size_t i = start; i < end; i++) {
     address = iota_sign_address_gen_trytes(seed, i, IOTA_SECURITY_LEVEL);
@@ -63,7 +63,7 @@ void generate_addresses(size_t start, size_t end, const char *seed) {
       fprintf(stderr, " Unable to create an address \n");
       exit(EXIT_FAILURE);
     }
-    addresses[i] = address;
+    (*addresses)[i] = address;
 
   }
 }
@@ -71,7 +71,7 @@ void generate_addresses(size_t start, size_t end, const char *seed) {
 int thr_gen_addr(void *argv) {
 
   struct thread_gen_address_s *struct_data = (struct thread_gen_address_s *) argv;
-  generate_addresses(struct_data->start, struct_data->end, struct_data->seed);
+  generate_addresses(struct_data->start, struct_data->end, struct_data->seed, &struct_data->addresses);
 }
 
 cmd_argv_enum parse_cmd_argv(size_t arr_size, char *argv[static arr_size], struct parsed_arguments *parg_argv) {
@@ -127,7 +127,7 @@ int main(int argc, char *argv[static argc]) {
   no_address_per_thread = parsed_argv.no_address / parsed_argv.no_thread;
 
   //Lazy to check it;
-  addresses = calloc(parsed_argv.no_address, sizeof(char *));
+  char **addresses = calloc(parsed_argv.no_address, sizeof(char *));
 
   thrd_t threads[parsed_argv.no_thread];
   struct thread_gen_address_s thread_func_argv[parsed_argv.no_thread];
@@ -140,12 +140,14 @@ int main(int argc, char *argv[static argc]) {
       thread_func_argv[i].start = i * no_address_per_thread;
       thread_func_argv[i].end =  ((i + 1) * no_address_per_thread) + parsed_argv.no_address % parsed_argv.no_thread;
       thread_func_argv[i].seed = SEED;
+      thread_func_argv[i].addresses = addresses;
 
     } else {
 
       thread_func_argv[i].start = i * no_address_per_thread;
       thread_func_argv[i].end = (i + 1) * no_address_per_thread;
       thread_func_argv[i].seed = SEED;
+      thread_func_argv[i].addresses = addresses;
 
     }
 
